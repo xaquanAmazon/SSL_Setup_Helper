@@ -26,7 +26,8 @@ powershell -Command ^
     "'js\stations.js'," ^
     "'js\storage.js'," ^
     "'js\utils.js'," ^
-    "'js\workCenter.js'" ^
+    "'js\workCenter.js'," ^
+    "'assets\stations.csv'" ^
   ");" ^
   "foreach ($f in $files) {" ^
     "$entry = $f -replace '\\','/';" ^

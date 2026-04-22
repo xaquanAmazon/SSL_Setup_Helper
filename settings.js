@@ -1,4 +1,4 @@
-import { DEFAULT_WORK_CENTER_URL } from './js/constants.js';
+import { STATION_SRC, DEFAULT_WORK_CENTER_URL } from './js/constants.js';
 
 // Work Sites
 const workSitesContent = document.getElementById('workSitesContent');
@@ -48,6 +48,15 @@ function parseCsv(raw) {
 }
 
 
+async function loadDefaultCsv() {
+  try {
+    const url = chrome.runtime.getURL(STATION_SRC);
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return res.text();
+  } catch { return null; }
+}
+
 async function loadCurrentCsv() {
   return new Promise(resolve => {
     chrome.storage.local.get('stationsCsv', data => {
@@ -74,7 +83,7 @@ saveUrlBtn.addEventListener('click', () => {
 });
 
 async function initialize() {
-  const csv = await loadCurrentCsv();
+  const csv = await loadCurrentCsv() || await loadDefaultCsv();
   if (csv) csvContent.value = csv;
 
   workSitesContent.value = await loadWorkSites();

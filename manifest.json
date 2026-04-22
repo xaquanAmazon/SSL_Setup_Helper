@@ -14,7 +14,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["js/qrcode.min.js", "styles.css"],
+      "resources": ["js/qrcode.min.js", "styles.css", "assets/stations.csv"],
       "matches": ["<all_urls>"]
     }
   ],

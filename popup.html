@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Matrix QR Code Generator</title>
+  <script src="js/qrcode.min.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body id="popup">
+  <div class="station-container">      
+    <div class="input-group">
+      <label for="siteId">Site:</label>
+      <select id="siteId" style="width: 120px; padding: 5px;"></select>
+    </div>
+    <div class="station-select-group">
+      <label for="workCenterSelect">Select Work Center:</label>
+      <select id="workCenterSelect">
+        <option value="">Select a station...</option>
+        <option value="Error">Error</option>
+      </select>
+    </div>
+    <button id="openWorkCenter">Open Work Center</button>
+  </div>
+
+  
+  <div class="matrix-inputs">
+    <div class="input-group">
+      <label for="layerNum">Levels:</label>
+      <input type="number" id="layerNum" min="1" value="1">
+    </div>  
+    <div class="input-group">
+      <label for="rows">Rows:</label>
+      <input type="number" id="rows" min="1" value="4">
+    </div>
+    <div class="input-group">
+      <label for="cols">Columns:</label>
+      <input type="number" id="cols" min="1" value="2">
+    </div>
+  </div>
+
+  <div class="input-group">
+    <label for="text">Enter SFCs (one per line):</label>
+    <textarea id="sfcsText" placeholder="Example:&#10;1033273-257&#10;1033544-268"></textarea>
+  </div>
+
+  <div class="controls">
+    <button id="generate">Generate QR Matrix</button>
+    <button id="wcSearch">Work Center Search</button>
+  </div>
+  <div id="copy_button_container">
+    <button id="copyLayout">Copy SFC in order</button>
+    <button id="clear">Clear All</button>
+  </div>
+
+  <a id="openSettings" href="#">Settings</a>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

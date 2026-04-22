@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Settings - SSL Setup Helper</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body id="settings">
+  <h2>Settings</h2>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="tab-workstations">Work Stations</button>
+    <button class="tab-btn" data-tab="tab-sites">Work Sites</button>
+  </div>
+
+  <div id="tab-workstations" class="tab-panel active">
+    <section class="settings-section">
+      <h3>Work Center Stations (CSV)</h3>
+      <p class="settings-hint">Format: <code>Work_Center_ID,Station_Description</code> (one per line, header row optional)</p>
+
+      <div class="settings-actions">
+        <label class="file-upload-btn" for="csvFileInput">
+          Upload CSV File
+          <input type="file" id="csvFileInput" accept=".csv,.txt">
+        </label>
+      </div>
+
+      <label for="csvContent">Or paste CSV content below:</label>
+      <textarea id="csvContent" class="full-width-input" placeholder="Work_Center_ID,Station_Description&#10;ST-xxxxx,xxxx PRODUCTION WORKBENCH&#10;ST-xxxxx,xxxxx MODEL LINE REWORK STATION"></textarea>
+
+      <div class="settings-actions">
+        <button id="saveContent" class="primary-btn">Save to Storage</button>
+        <button id="clearStations" class="danger-btn">Clear List</button>
+      </div>
+
+      <div id="statusMsg" class="status-msg"></div>
+    </section>
+
+    <section class="settings-section">
+      <h3>Work Center URL Template</h3>
+      <p class="settings-hint">Use <code>{SITE}</code> and <code>{Work_Center_ID}</code> as placeholders</p>
+      <input type="text" id="urlTemplate" class="full-width-input">
+      <div class="settings-actions">
+        <button id="saveUrl" class="primary-btn">Save URL</button>
+      </div>
+      <div id="urlStatusMsg" class="status-msg"></div>
+    </section>
+
+  </div>
+
+  <div id="tab-sites" class="tab-panel">
+    <section class="settings-section">
+      <h3>Work Sites</h3>
+      <p class="settings-hint">One site per line. Format: <code>SiteNumber,SiteName</code></p>
+      <textarea id="workSitesContent" placeholder="133,Site A&#10;200,Site B"></textarea>
+      <div class="settings-actions">
+        <button id="saveSites" class="primary-btn">Save Sites</button>
+      </div>
+      <div id="sitesStatusMsg" class="status-msg"></div>
+    </section>
+  </div>
+
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

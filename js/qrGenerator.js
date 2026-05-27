@@ -20,7 +20,7 @@ function createLayout(sfcList, layerCount, rows, cols) {
       const tr = document.createElement('tr');
 
       for (let col = 0; col < colCount; col++) {
-        const itemIndex = row * colCount + col;
+        const itemIndex = (layerIndex * rowCount * colCount) + (row * colCount + col);
         const value = sfcList[itemIndex];
 
         if (!value) {

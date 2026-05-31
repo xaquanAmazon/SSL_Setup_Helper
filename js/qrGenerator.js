@@ -1,55 +1,77 @@
 import { QR_SIZE, CSS_SRC, QR_CODE_SRC } from './constants.js';
 
-function createLayout(sfcList, layerCount, rows, cols) {
-  const layerNum = Number(layerCount);
-  const rowCount = Number(rows);
-  const colCount = Number(cols);
+function parseLayers(sfcList) {
+  const layers = [];
+  let currentLayer = null;
+  let currentRow = [];
+  let pos = 0;
+
+  for (const line of sfcList) {
+    if (line.startsWith('#')) {
+      // Start a new layer
+      if (currentLayer) {
+        if (currentRow.length) currentLayer.rows.push(currentRow);
+        layers.push(currentLayer);
+      }
+      currentLayer = { title: line.slice(1).trim() || `Layer ${layers.length + 1}`, rows: [] };
+      currentRow = [];
+    } else if (line.startsWith('---')) {
+      // New row
+      if (!currentLayer) currentLayer = { title: 'Layer 1', rows: [] };
+      if (currentRow.length) currentLayer.rows.push(currentRow);
+      currentRow = [];
+    } else {
+      // SFC item
+      if (!currentLayer) currentLayer = { title: 'Layer 1', rows: [] };
+      pos++;
+      currentRow.push({ value: line, pos });
+    }
+  }
+
+  if (currentLayer) {
+    if (currentRow.length) currentLayer.rows.push(currentRow);
+    layers.push(currentLayer);
+  }
+  return layers;
+}
+
+function createLayout(sfcList) {
+  const layers = parseLayers(sfcList);
   const qrContainer = document.createElement('div');
   qrContainer.id = 'qrLayoutContainer';
 
-  for (let layerIndex = 0; layerIndex < layerNum; layerIndex++) {
+  for (const layer of layers) {
     const layerHeader = document.createElement('h3');
-    layerHeader.textContent = `Layer ${layerIndex + 1}`;
+    layerHeader.textContent = layer.title;
     qrContainer.appendChild(layerHeader);
 
     const layerTable = document.createElement('table');
     layerTable.className = 'layerTable';
     const tbody = document.createElement('tbody');
 
-    for (let row = 0; row < rowCount; row++) {
+    for (const row of layer.rows) {
       const tr = document.createElement('tr');
-
-      for (let col = 0; col < colCount; col++) {
-        const itemIndex = (layerIndex * rowCount * colCount) + (row * colCount + col);
-        const value = sfcList[itemIndex];
-
-        if (!value || value.startsWith('#')) {
-          continue;
-        }
-
+      for (const item of row) {
         const td = document.createElement('td');
 
         const posDiv = document.createElement('div');
         posDiv.className = 'qr-pos';
-        posDiv.textContent = `Pos: ${itemIndex + 1}`;
+        posDiv.textContent = `Pos: ${item.pos}`;
         td.appendChild(posDiv);
 
         const qrDiv = document.createElement('div');
         qrDiv.className = 'qr-item';
-        qrDiv.dataset.value = value;
+        qrDiv.dataset.value = item.value;
         td.appendChild(qrDiv);
 
         const sfcDiv = document.createElement('div');
         sfcDiv.className = 'qr-id';
-        sfcDiv.textContent = `ID#: ${value}`;
+        sfcDiv.textContent = `ID#: ${item.value}`;
         td.appendChild(sfcDiv);
 
         tr.appendChild(td);
       }
-
-      if (tr.childNodes.length > 0) {
-        tbody.appendChild(tr);
-      }
+      tbody.appendChild(tr);
     }
 
     layerTable.appendChild(tbody);
@@ -60,11 +82,12 @@ function createLayout(sfcList, layerCount, rows, cols) {
 }
 
 function getAutoSize(targetWindow, requestedSize) {
-  const firstRow = targetWindow.document.querySelector('.layerTable tr');
-  if (!firstRow) return requestedSize;
-  const cols = firstRow.children.length;
-  if (cols === 0) return requestedSize;
-  const available = Math.floor(targetWindow.innerWidth / cols) - 40;
+  const rows = targetWindow.document.querySelectorAll('.layerTable tr');
+  if (!rows.length) return requestedSize;
+  let maxCols = 0;
+  rows.forEach(row => { if (row.children.length > maxCols) maxCols = row.children.length; });
+  if (maxCols === 0) return requestedSize;
+  const available = Math.floor(targetWindow.innerWidth / maxCols) - 40;
   return Math.max(32, Math.min(requestedSize, available));
 }
 
@@ -124,8 +147,8 @@ function createZoomToolbar(targetWindow, renderFn) {
   return { toolbar, sizeDisplay };
 }
 
-export function generateQRLayout(sfcList, layerCount, rows, cols) {
-  const qrContainer = createLayout(sfcList, layerCount, rows, cols);
+export function generateQRLayout(sfcList) {
+  const qrContainer = createLayout(sfcList);
   openNewWindow(qrContainer);
 }
 

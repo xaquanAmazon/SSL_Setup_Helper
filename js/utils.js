@@ -8,3 +8,7 @@ export function parseLines(text) {
     .map(line => line.trim())
     .filter(Boolean);
 }
+
+export function parseSfcOnly(text) {
+  return parseLines(text).filter(line => !line.startsWith('#') && !line.startsWith('---'));
+}

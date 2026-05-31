@@ -2,7 +2,7 @@
 import { loadStationData } from './js/stations.js';
 import { openWorkCenter, workCenterSearch } from './js/workCenter.js';
 import { generateQRLayout } from './js/qrGenerator.js';
-import { parseLines } from './js/utils.js';
+import { parseLines, parseSfcOnly } from './js/utils.js';
 
 function getActiveTab() {
     return new Promise(resolve => chrome.tabs.query({ active: true, currentWindow: true }, resolve));
@@ -10,9 +10,6 @@ function getActiveTab() {
 
 function getInputValues() {
     return {
-        layerNumber: parseInt(document.getElementById('layerNum').value, 10) || 1,
-        rows: parseInt(document.getElementById('rows').value, 10) || 1,
-        cols: parseInt(document.getElementById('cols').value, 10) || 1,
         workCenterId: document.getElementById('workCenterSelect').value,
         siteId: document.getElementById('siteId').value,
         sfcText: document.getElementById('sfcsText').value,
@@ -20,12 +17,9 @@ function getInputValues() {
 }
 
 function saveCurrentData() {
-    const { layerNumber, rows, cols, workCenterId, siteId, sfcText } = getInputValues();
+    const { workCenterId, siteId, sfcText } = getInputValues();
     return saveDataToStorage({
         savedData: sfcText,
-        LayerNumber: layerNumber,
-        Rows: rows,
-        Cols: cols,
         WorkCenterId: workCenterId,
         SiteId: siteId,
     });
@@ -37,16 +31,10 @@ function populateSavedValues(data) {
     }
 
     const sfcsText = document.getElementById('sfcsText');
-    const layerNumInput = document.getElementById('layerNum');
-    const rowsInput = document.getElementById('rows');
-    const colsInput = document.getElementById('cols');
     const workCenterSelect = document.getElementById('workCenterSelect');
     const siteIdInput = document.getElementById('siteId');
 
     if (data.savedData) sfcsText.value = data.savedData;
-    if (data.LayerNumber) layerNumInput.value = data.LayerNumber;
-    if (data.Rows) rowsInput.value = data.Rows;
-    if (data.Cols) colsInput.value = data.Cols;
     if (data.WorkCenterId) workCenterSelect.value = data.WorkCenterId;
     if (data.SiteId) siteIdInput.value = data.SiteId;
 }
@@ -89,9 +77,9 @@ async function initialize() {
 
     generateButton.addEventListener('click', async () => {
         await saveCurrentData();
-        const { layerNumber, rows, cols, sfcText } = getInputValues();
+        const { sfcText } = getInputValues();
         const sfcList = parseLines(sfcText);
-        generateQRLayout(sfcList, layerNumber, rows, cols);
+        generateQRLayout(sfcList);
     });
 
     clearButton.addEventListener('click', async () => {
@@ -129,7 +117,7 @@ async function initialize() {
     wcSearchBtn.addEventListener('click', async () => {
         await saveCurrentData();
         const { sfcText } = getInputValues();
-        const sfcList = parseLines(sfcText);
+        const sfcList = parseSfcOnly(sfcText);
         await workCenterSearch(isMesWorkCenterPage, sfcList, tab, wcSearchBtn);
     });
 

@@ -4,13 +4,12 @@ A Chrome/Edge extension that generates QR codes for SFCs (Shop Floor Controls) o
 
 ## Features
 
-- Generate QR codes in a grid layout (rows × columns × layers)
+- Generate QR codes in a grid layout defined inline with layer and row markers
 - Zoomable QR codes with auto-sizing to fit the window
 - Open and navigate to MES Work Center directly from the popup
 - Batch SFC search on the MES Work Center page
 - Copy SFC list to clipboard
 - Configurable work stations, work sites, and URL templates
-- Skip SFC items prefixed with `#` (treated as comments)
 - Persistent storage of settings and SFC data between sessions
 
 ## Installation
@@ -43,32 +42,43 @@ When you click the extension icon, the popup provides:
 | **Select Work Center** | Choose a work center station from the configured list |
 | **Open Work Center** | Opens the MES Work Center page for the selected station |
 
-#### 2. Matrix Configuration
+#### 2. SFC Input & Layout Definition
 
-| Field | Description |
-|-------|-------------|
-| **Levels** | Number of layers (vertical stacking groups) |
-| **Rows** | Number of rows per layer |
-| **Columns** | Number of columns per layer |
+Enter SFC identifiers in the textarea using inline markers to define the matrix layout:
 
-#### 3. SFC Input
+| Syntax | Meaning |
+|--------|---------|
+| `#Layer Name` | Starts a new layer with the given name/title |
+| `---` | Starts a new row within the current layer |
+| Any other text | An SFC item (generates a QR code) |
 
-Enter SFC identifiers in the textarea, one per line:
+**Example:**
 
 ```
+#Shelf A
 1033273-257
 1033544-268
+---
 1033600-100
+1033601-101
+#Shelf B
+2044000-001
+2044000-002
+2044000-003
 ```
 
-- Lines starting with `#` are ignored (use as comments or to temporarily disable an SFC)
-- Empty lines are skipped
+This produces:
 
-#### 4. Actions
+- **Shelf A** — 2 rows: first row has 2 QR codes, second row has 2 QR codes
+- **Shelf B** — 1 row with 3 QR codes
+
+Empty lines are skipped.
+
+#### 3. Actions
 
 | Button | Action |
 |--------|--------|
-| **Generate QR Matrix** | Opens a new window with QR codes arranged in the configured layout |
+| **Generate QR Matrix** | Opens a new window with QR codes arranged per the inline layout |
 | **Work Center Search** | Searches each SFC on the active MES Work Center page |
 | **Copy SFC in order** | Copies the SFC list to clipboard |
 | **Clear All** | Clears the SFC textarea and saved data |
@@ -77,8 +87,8 @@ Enter SFC identifiers in the textarea, one per line:
 
 After clicking **Generate QR Matrix**, a new window opens displaying:
 
-- Layer headers (`Layer 1`, `Layer 2`, etc.)
-- QR codes arranged in the configured grid
+- Layer headers (from `#` lines)
+- QR codes arranged in rows (split by `---`)
 - Position number and SFC ID below each QR code
 - A zoom toolbar with `+`, `-`, and reset (`↻`) buttons
 
@@ -102,7 +112,7 @@ Access via the **Settings** link at the bottom of the popup (or right-click the 
 
 1. Open the MES Work Center page in your browser
 2. Open the extension popup
-3. Enter SFCs in the textarea
+3. Enter SFCs in the textarea (layer/row markers are ignored during search)
 4. Click **Work Center Search**
 5. The extension will sequentially search each SFC on the MES page
 6. A summary will report any SFCs that were not found

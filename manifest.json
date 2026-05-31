@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SSL Setup Helper",
   "description": "Generate QR codes for any text or URL. Organize SFCs into configurable matrix layouts with multi-layer support.",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "icons": {
     "16": "images/icon-16.png",
     "48": "images/icon-48.png",

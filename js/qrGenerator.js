@@ -23,7 +23,7 @@ function createLayout(sfcList, layerCount, rows, cols) {
         const itemIndex = (layerIndex * rowCount * colCount) + (row * colCount + col);
         const value = sfcList[itemIndex];
 
-        if (!value) {
+        if (!value || value.startsWith('#')) {
           continue;
         }
 
